@@ -27,12 +27,40 @@ export default function App() {
   const changeCounts = (amount, index) => {
     const newState = [...countables];
     newState[index].count += amount;
-    setCountables(newState);
-    saveCountables(newState);
+
+    //this stops minus values from being put in
+    if (newState[index].count < 0) {
+      newState[index].count = 0;
+      setCountables(newState);
+      saveCountables(newState);
+    } else if (newState[index].count >= 0) {
+      setCountables(newState);
+      saveCountables(newState);
+    }
   };
 
+  //we change to check for null names
   const addNewCountable = (name) => {
-    const newState = [...countables, { name, count: 0 }];
+    //Lets also make a for loop to check for duplicate names when the function is called
+    for (let j = 0; j < countables.length; j++) {
+      if (countables[j].name === name) {
+        return null;
+      }
+    }
+    if (name === "") {
+      console.log("No empty names");
+    } else {
+      //this means we passed all checks and can add it
+      const newState = [...countables, { name, count: 0 }];
+      setCountables(newState);
+      saveCountables(newState);
+    }
+  };
+
+  //here we define our const for deleting a iteam
+  const deleteself = (name) => {
+    //We use filter to filter away based on name, also since the name are uniques we don't have to worry about running in to issues with duplicate names
+    const newState = countables.filter((item) => item.name !== name);
     setCountables(newState);
     saveCountables(newState);
   };
@@ -51,6 +79,7 @@ export default function App() {
               key={countable.name}
               changeCounts={changeCounts}
               index={index}
+              deleteself={deleteself}
             />
           ))}
           <View style={{ flex: 1 }} />
